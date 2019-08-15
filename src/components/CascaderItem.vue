@@ -1,12 +1,14 @@
 <template>
     <div class="content-stru">
         <div v-for="(item,key) in options" :key="key">
-            <div> 
-                <i @click="getChildren(item)">&gt;</i> 
-                <span @click="select(item)">口</span> 
+            <div class="item"> 
+                <span class="get-icon" >
+                  <font-awesome-icon v-if="item.children == null || item.children.length > 0" :icon="['fas', item.loading ? 'spinner': item.showChildren ? 'angle-down' : 'angle-right']" size="xs" @click="getChildren(item);"/>
+                </span>
+                <font-awesome-icon class="select-icon" :icon="['far', item.selected ? 'check-square' : 'square']" size="xs" @click="togglerSelect(item)"/>
                 <span>{{item.name}}</span>
             </div>  
-            <CascaderItem :options="item.children" @update="update"></CascaderItem>
+            <CascaderItem v-show="item.showChildren" :options="item.children"  :getData="getData"></CascaderItem>
         </div>
     </div>
 </template>
@@ -14,31 +16,60 @@
 <script>
 
 export default {
+  computed:{
+   
+  },
   name:'CascaderItem',
   props:{
     options:{
       type:Array
-    }
+    },
+    getData:{
+      type:Function
+    },
   },
   data(){
-    return {}
+    return {
+     
+    }
   },
   mounted(){
-      console.log(this.options)
+    
   },
   methods:{
-    getChildren(item){
-        // 并通知父组件获取子节点 更新参数
-        this.$emit('update',item)
+    async getChildren(item){
+      if(item.showChildren){
+        item.showChildren = !item.showChildren
+        return
+      }
+      if(item.children){
+        item.showChildren = !item.showChildren
+        return
+      }
+
+      let indx,showChildren
+      this.options.forEach((element,index) => {
+        if(element.id == item.id){
+          indx = index;
+          return
+        }
+      });
+      this.$set(this.options[indx],'loading',true);
+      let datas = await this.getData(item);
+      this.$set(this.options[indx],'children',datas);
+      this.$set(this.options[indx],'showChildren',!showChildren);
+      delete(item.loading)
     },
-    select(item){
-        // 获取当前节点下的组织架构 item.id  并通知父组件更新参数
-     
-    },
-    update(value){
-        console.log(this.options,value.id)
-        // let items = this.options.filter(item => item.id == value.id)[0];
-        // this.$emit('update',items)
+    togglerSelect(item){      
+      let indx,selected
+      this.options.forEach((element,index) => {
+        if(element.id == item.id){
+          indx = index;
+          selected = item.selected
+          return
+        }
+      });
+      this.$set(this.options[indx],'selected',!selected);
     },
   }
 };

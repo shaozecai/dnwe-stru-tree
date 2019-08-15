@@ -1,30 +1,35 @@
 <template>
     <div>
-      <Cascader :options="options" v-model="value" @update="update">cesss</Cascader>
-      <br>
-      <br>
-      <br>
+      <Cascader :options="options" v-model="value" :getData="getData"></Cascader>
     </div>
 </template>
 
 <script>
 import Cascader from './components/Cascader';
 import data from './data'
+import { Promise } from 'q';
 export default {
     methods:{
-      update(value){
-        console.log('update',value)
-        this.$set(this.options[0],'children',[{id:'12',name:'test11'},{id:'13',name:'test22'}])
+      async getData(item){
+        return new Promise((resolve,reject)=>{
+          setTimeout(() => {
+             let result = data.filter(t=>t.pid === item.id);
+             resolve(result); // 将获取到的数据传递出去
+          }, 1000);
+        })
       }
     },
     data(){
       return {
-        options: data,
+        options: data.filter(item=>item.pid == 0),
         value:['001']
       }
     },
     components:{
         Cascader
+    },
+    computed:{
+      
     }
 }
 </script>
