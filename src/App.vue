@@ -22,7 +22,9 @@ export default {
     data(){
       return {
         options: data.filter(item=>item.pid == 0),
-        value:['001']
+        value:[
+          // { "id": '1',"name": "上海", pid: '0', isLeaf:'0'}
+          ]
       }
     },
     components:{

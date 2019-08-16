@@ -2,11 +2,11 @@
     <div class="dnwe-stru-tree" v-click-outside="close">
       <div class="trigger" @click="toggle">
         <slot></slot>
-        <input class="dnwe-tree-input" type="text" placeholder="请选择">
+        <input class="dnwe-tree-input" type="text" :value="selectedText" placeholder="请选择">
       </div>
       <div class="dnwe-stru-tree-box" v-if="isVisible">
         <div class="content">
-          <CascaderItem :options="options" :getData="getData"></CascaderItem>
+          <CascaderItem :options="options" :value="value" :getData="getData"></CascaderItem>
         </div>
       </div>
     </div>
@@ -15,14 +15,26 @@
 <script>
 import CascaderItem from './CascaderItem'
 export default {
+  computed:{
+    selectedText(){
+      return this.value.reduce((prev,next)=> {
+        prev.push(next.name);
+        return prev
+      },[]).join(',')
+    }
+  },
   mounted(){
-   
+    
   },
   components:{
     CascaderItem
   },
   name:'Cascader',
   props:{
+    value:{
+      type:Array,
+      default: ()=>{return []}
+    },
     options:{
       type:Array
     },

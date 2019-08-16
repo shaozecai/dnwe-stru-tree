@@ -8,7 +8,7 @@
                 <font-awesome-icon class="select-icon" :icon="['far', item.selected ? 'check-square' : 'square']" size="xs" @click="togglerSelect(item)"/>
                 <span>{{item.name}}</span>
             </div>  
-            <CascaderItem v-show="item.showChildren" :options="item.children"  :getData="getData"></CascaderItem>
+            <CascaderItem v-show="item.showChildren" :value="value" :options="item.children"  :getData="getData"></CascaderItem>
         </div>
     </div>
 </template>
@@ -27,6 +27,10 @@ export default {
     getData:{
       type:Function
     },
+    value:{
+      type:Array,
+      default:()=>{return []}
+    }
   },
   data(){
     return {
@@ -70,6 +74,16 @@ export default {
         }
       });
       this.$set(this.options[indx],'selected',!selected);
+      if(this.options[indx].selected){
+        this.$set(this.value,this.value.length,item);
+      }else{
+        this.value.forEach((element,index) => {
+          if(element.id == item.id){
+            this.value.splice(index,1);
+            return false
+          }
+        });
+      }
     },
   }
 };
